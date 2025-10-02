@@ -27,7 +27,7 @@ library(ggstatsplot)
 ##############################################
 # Load dataset
 ##############################################
-df <- read_excel("your_file.xlsx", sheet = "your_sheet")
+df <- read_excel("DB Womens Soccer.xlsx", sheet = "gameData")
 df$idNumeric <- as.numeric(as.factor(df$Athlete))   # create numeric athlete ID
 
 ##############################################
@@ -57,9 +57,9 @@ fullMatch <- fullMatch %>%
 
 fullMatch <- fullMatch %>%
   mutate(PointsDiffCat = case_when(
-    PointsDifference < 3 ~ "Small",
-    PointsDifference >= 3 & PointsDifference < 8 ~ "Moderate",
-    PointsDifference >= 8 ~ "Large"
+    PointDif < 3 ~ "Small",
+    PointDif >= 3 & PointDif < 8 ~ "Moderate",
+    PointDif >= 8 ~ "Large"
   ))
 
 ##############################################
@@ -69,7 +69,7 @@ descriptive_stats <- function(variable) {
   fullMatch %>%
     mutate(
       Position = factor(Position, 
-                        levels = c("Defender", "Fullback", "Midfielder", "Forward")),
+                        levels = c("zagueira", "lateral", "meio-campista", "atacante")),
       ReportCondition = factor(ReportCondition, 
                                levels = c("90+", "45+", "5+"))
     ) %>%
@@ -84,33 +84,13 @@ descriptive_stats <- function(variable) {
 }
 
 ##############################################
-# Cross tables for contextual variables
-##############################################
-tables <- list()
-for (var in independentVars) {
-  for (depVar in dependentVars) {
-    table_name <- paste0("table_", var, "_", depVar)  
-    tables[[table_name]] <- calculate_table(var, depVar)
-  }
-}
-
-# Save results in Excel (each table in a different sheet)
-wb <- createWorkbook()
-lapply(seq_along(tables), function(i) {
-  sheet_name <- names(tables)[i]
-  sheet_name <- substr(sheet_name, nchar(sheet_name) - 30, nchar(sheet_name))
-  addWorksheet(wb, sheet_name)  
-  writeData(wb, sheet = sheet_name, tables[[i]])  
-})
-saveWorkbook(wb, "IC_Days.xlsx", overwrite = TRUE)
-
-##############################################
 # Generalized Estimation Equations (GEE)
 ##############################################
-dependentVars = c("DistRel") # Example: set dependent variables
+
+dependentVars = c("DistanceRel") # Example: set dependent variables
 
 for (depVar in dependentVars) {
-  indepVar <- "Result" # Example: set independent variable
+  indepVar <- "PointsDiffCat" # Example: set independent variable
   
   formula <- as.formula(paste(depVar, " ~ Group * ", indepVar))
   
@@ -162,10 +142,10 @@ summaryAbs <- fullMatch %>%
     SDZone5Effort = sd(HighEfforts23, na.rm = TRUE),
     MeanPlayerLoad = mean(PlayerLoad, na.rm = TRUE),
     SDPlayerLoad = sd(PlayerLoad, na.rm = TRUE),
-    MeanAcc = mean(ACCAbove2, na.rm = TRUE),
-    SDAcc = sd(ACCAbove2, na.rm = TRUE),
-    MeanDec = mean(DCCAbove2, na.rm = TRUE),
-    SDDec = sd(DCCAbove2, na.rm = TRUE)
+    MeanAcc = mean(ACCACIMA2, na.rm = TRUE),
+    SDAcc = sd(ACCACIMA2, na.rm = TRUE),
+    MeanDec = mean(DCCACIMA2, na.rm = TRUE),
+    SDDec = sd(DCCACIMA2, na.rm = TRUE)
   )
 
 ##############################################
