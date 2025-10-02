@@ -27,7 +27,7 @@ library(ggstatsplot)
 ##############################################
 # Load dataset
 ##############################################
-df <- read_excel("DB Womens Soccer.xlsx", sheet = "gameData")
+df <- read_excel("path/to/your_file.xlsx", sheet = "sheet")
 df$idNumeric <- as.numeric(as.factor(df$Athlete))   # create numeric athlete ID
 
 ##############################################
@@ -69,7 +69,7 @@ descriptive_stats <- function(variable) {
   fullMatch %>%
     mutate(
       Position = factor(Position, 
-                        levels = c("zagueira", "lateral", "meio-campista", "atacante")),
+                        levels = c("defender", "fullback", "midfielder", "foward")),
       ReportCondition = factor(ReportCondition, 
                                levels = c("90+", "45+", "5+"))
     ) %>%
@@ -167,3 +167,4 @@ create_boxplot <- function(y_var, y_label, title, show_legend = TRUE) {
     theme_minimal() +
     guides(fill = if (show_legend) guide_legend(title = NULL) else "none")
 }
+
